@@ -26,23 +26,24 @@ import sys
 now = lambda: time.time()
 
 
-async def worker(filename):
+async def worker(filename, lines):
     i = 0
     with open(filename, "w") as fh:
         while True:
             i = i + 1
             fh.write("This is the %s line\n" % str(i))
-            if i > 10000:
+            if i > lines:
                 break
 
 if __name__ == "__main__":
     FILENAME = sys.argv[1]
     count = int(sys.argv[2])
+    lines = int(sys.argv[3])
     start = now()
     tasks = []
     for i in range(count):
         fname = "%s%s.txt" % (FILENAME, str(i))
-        tasks.append(asyncio.ensure_future(worker(fname)))
+        tasks.append(asyncio.ensure_future(worker(fname, lines)))
     loop = asyncio.get_event_loop()
     loop.run_until_complete(asyncio.wait(tasks))
     print('TIME: ', now() - start)
